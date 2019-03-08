@@ -8,11 +8,10 @@ namespace HuaQuant.JobSchedule
 {
     public class RepeatTrigger : ITrigger
     {
-        FrequencyLimiter freLimiter = null;
-        StartStopTimeLimiter startStopTimeLimiter = null;
-        SingleTimeLimiter singleTimeLimiter = null;
-
-        TimeSpan timeInterval;
+        private FrequencyLimiter freLimiter = null;
+        private StartStopTimeLimiter startStopTimeLimiter = null;
+        private SingleTimeLimiter singleTimeLimiter = null;
+        private TimeSpan timeInterval;
         private DateTime? nextTriggerTime = null;
         public RepeatTrigger(TimeSpan timeInterval,DateTime? startTime=null, DateTime? stopTime=null,int? frequencyLimit=null)
         {
@@ -20,15 +19,16 @@ namespace HuaQuant.JobSchedule
             if (startTime != null || stopTime != null) this.startStopTimeLimiter = new StartStopTimeLimiter(startTime, stopTime);
             if (frequencyLimit != null) this.freLimiter = new FrequencyLimiter((int)frequencyLimit);
         }
-        public RepeatTrigger(TimeSpan timeInterval,DateTime time)
+        public RepeatTrigger(TimeSpan timeInterval,DateTime time,int? frequencyLimit = null)
         {
             this.timeInterval = timeInterval;
             this.singleTimeLimiter = new SingleTimeLimiter(time);
+            if (frequencyLimit != null) this.freLimiter = new FrequencyLimiter((int)frequencyLimit);
         }
         private bool expired = false;
         bool ITrigger.Expired => this.expired;
 
-        bool ITrigger.Trigger(DateTime time, IJob job)
+        bool ITrigger.Trigger(DateTime time, Job job)
         {
             if (startStopTimeLimiter != null)
             {

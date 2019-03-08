@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace HuaQuant.JobSchedule
 {
-    public interface ITrigger
+    public class EmptyJob:Job
     {
-        bool Trigger(DateTime time, Job job);
-        bool Expired { get; }
+        public EmptyJob() : base("EmptyJob", null, false) { } 
     }
 }

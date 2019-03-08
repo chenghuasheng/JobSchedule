@@ -9,8 +9,8 @@ namespace HuaQuant.JobSchedule
 {
     public class JobSchedule
     {
-        private Dictionary<IJob, ITrigger> triggerDict = new Dictionary<IJob, ITrigger>();
-        private Dictionary<IJob, List<JobProcess>> processDict = new Dictionary<IJob, List<JobProcess>>();
+        private Dictionary<Job, ITrigger> triggerDict = new Dictionary<Job, ITrigger>();
+        private Dictionary<Job, List<JobProcess>> processDict = new Dictionary<Job, List<JobProcess>>();
         private System.Timers.Timer timer = null;
         private int interval = 100;
         private int processNumPerJob = 1;//每个作业的进程数
@@ -48,7 +48,7 @@ namespace HuaQuant.JobSchedule
             {
                 lock (triggerDict)
                 {
-                    foreach (KeyValuePair<IJob, ITrigger> kvp in triggerDict)
+                    foreach (KeyValuePair<Job, ITrigger> kvp in triggerDict)
                     {
                         if (!kvp.Value.Expired) schedule(e.SignalTime, kvp.Value, kvp.Key);
                     }
@@ -56,7 +56,7 @@ namespace HuaQuant.JobSchedule
                 Interlocked.Exchange(ref inTimer, 0);
             }
         }
-        private void schedule(DateTime time, ITrigger trigger, IJob job)
+        private void schedule(DateTime time, ITrigger trigger, Job job)
         {
             if (trigger.Trigger(time, job))
             {
@@ -85,7 +85,7 @@ namespace HuaQuant.JobSchedule
                 }
             }
         }
-        public void Add(IJob job, ITrigger trigger)
+        public void Add(Job job, ITrigger trigger)
         {
             lock (this.triggerDict)
             {

@@ -7,32 +7,32 @@ using System.Threading;
 
 namespace HuaQuant.JobSchedule
 {
-    public abstract class Job : IJob
+    public abstract class Job
     {
         private string name="Job";
-        string IJob.Name  => this.name;
+        public string Name  => this.name;
         bool showDetail = false;
-        bool IJob.ShowDetail {
+        public bool ShowDetail {
             get => this.showDetail;
             set => this.showDetail=value;
         }
-        private IEnumerable<IJob> needJobs = null;
-        IEnumerable<IJob> IJob.NeedJobs  => this.needJobs;
+        private IEnumerable<Job> needJobs = null;
+        public IEnumerable<Job> NeedJobs  => this.needJobs;
         private int frequencies = 0;
         public int Frequencies => this.frequencies;
 
-        public Job(string name, IEnumerable<IJob> needJobs = null, bool showDetail = false)
+        public Job(string name, IEnumerable<Job> needJobs = null, bool showDetail = false)
         {
             this.name = name;
             this.needJobs = needJobs;
             this.showDetail = showDetail;
         }
 
-        bool IJob.Execute()
+        public virtual bool Execute()
         {
-            throw new NotImplementedException();
+            return true;
         }
-        void IJob.IncrementFrequency()
+        public void IncrementFrequency()
         {
             Interlocked.Increment(ref frequencies);
         }
