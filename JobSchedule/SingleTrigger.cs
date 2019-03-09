@@ -36,11 +36,15 @@ namespace HuaQuant.JobSchedule
         private bool expired = false;
         bool ITrigger.Expired => this.expired;
 
-        bool ITrigger.Trigger(DateTime time, IJob job)
+        bool ITrigger.Trigger(DateTime time, IJob job, int runnings)
         {
             if (job.Frequencies + 1 > 1)
             {
                 this.expired = true;
+                return false;
+            }
+            else if (job.Frequencies + runnings + 1 > 1)
+            {
                 return false;
             }
             if (this.subTrigger != null)
@@ -51,10 +55,11 @@ namespace HuaQuant.JobSchedule
                     this.expired = true;
                     return false;
                 }
-                bool ret = trigger.Trigger(time, this.subJob);
+                bool ret = trigger.Trigger(time, this.subJob, 0);
                 if (ret) this.subJob.IncrementFrequency();
                 return ret;
-            }else
+            }
+            else
             {
                 if (startStopTimeLimiter != null)
                 {
@@ -78,7 +83,8 @@ namespace HuaQuant.JobSchedule
                             return false;
                         }
                     }
-                }else
+                }
+                else
                 {
                     return true;
                 }
