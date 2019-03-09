@@ -6,7 +6,7 @@ namespace HuaQuant.JobSchedule
 {
     public class JobProcess
     {
-        private Job curJob = null;
+        private IJob curJob = null;
         private bool finished = false;
         public bool IsFinished => this.finished;
         public bool IsRunning
@@ -18,7 +18,7 @@ namespace HuaQuant.JobSchedule
         }
 
         private Thread thread = null;
-        public JobProcess(Job job)
+        public JobProcess(IJob job)
         {
             this.curJob = job;
         }

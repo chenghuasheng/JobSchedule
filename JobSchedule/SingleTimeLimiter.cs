@@ -23,17 +23,17 @@ namespace HuaQuant.JobSchedule
             switch (this.precission)
             {
                 case SingleTimeLimiterPrecission.Second:
-                    if (span.TotalSeconds > 0) return true;
+                    if (Convert.ToInt32(span.TotalSeconds) > 0) return true;
                     break;
                 case SingleTimeLimiterPrecission.Minute:
-                    if (span.TotalMinutes > 0) return true;
+                    if (Convert.ToInt32(span.TotalMinutes) > 0) return true;
                     break;
                 case SingleTimeLimiterPrecission.Hour:
-                    if (span.TotalHours > 0) return true;
+                    if (Convert.ToInt32(span.TotalHours) > 0) return true;
                     break;
                 case SingleTimeLimiterPrecission.Day:
-                    if (span.TotalDays > 0) return true;
-                    break; 
+                    if (Convert.ToInt32(span.TotalDays) > 0) return true;
+                    break;
             }
             return false;
         }

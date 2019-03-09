@@ -9,8 +9,8 @@ namespace HuaQuant.JobSchedule
 {
     public class JobSchedule
     {
-        private Dictionary<Job, ITrigger> triggerDict = new Dictionary<Job, ITrigger>();
-        private Dictionary<Job, List<JobProcess>> processDict = new Dictionary<Job, List<JobProcess>>();
+        private Dictionary<IJob, ITrigger> triggerDict = new Dictionary<IJob, ITrigger>();
+        private Dictionary<IJob, List<JobProcess>> processDict = new Dictionary<IJob, List<JobProcess>>();
         private System.Timers.Timer timer = null;
         private int interval = 100;
         private int processNumPerJob = 1;//每个作业的进程数
@@ -39,38 +39,81 @@ namespace HuaQuant.JobSchedule
             {
                 foreach(JobProcess process in processList) process.Stop(true);
             }
-            processDict.Clear();
+            lock (this.processDict)
+            {
+                processDict.Clear();
+            }
         }
         private int inTimer = 0;//防止计时器事件重入
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (Interlocked.Exchange(ref inTimer, 1) == 0)
             {
-                lock (triggerDict)
+                foreach (KeyValuePair<IJob, ITrigger> kvp in triggerDict)
                 {
-                    foreach (KeyValuePair<Job, ITrigger> kvp in triggerDict)
-                    {
-                        if (!kvp.Value.Expired) schedule(e.SignalTime, kvp.Value, kvp.Key);
-                    }
+                    if (!kvp.Value.Expired) schedule(e.SignalTime, kvp.Value, kvp.Key);
                 }
                 Interlocked.Exchange(ref inTimer, 0);
             }
         }
-        private void schedule(DateTime time, ITrigger trigger, Job job)
+        private bool passedNeedJobs(IJob job)
+        {
+            bool can = true;
+            if (job.NeedJobs!=null&&job.NeedJobs.Count() > 0)
+            {                
+                foreach (IJob needJob in job.NeedJobs)
+                {
+                    ITrigger tgr = null;
+                    if (this.triggerDict.TryGetValue(needJob, out tgr))
+                    {
+                        if (!tgr.Expired)
+                        {
+                            can = false;
+                            break;
+                        }
+                    }
+                    List<JobProcess> processList;
+                    if (this.processDict.TryGetValue(needJob, out processList))
+                    {
+                        foreach (JobProcess process in processList)
+                        {
+                            if (!process.IsFinished)
+                            {
+                                can = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return can;
+        }
+        private void schedule(DateTime time, ITrigger trigger, IJob job)
         {
             if (trigger.Trigger(time, job))
             {
+                if (!passedNeedJobs(job))
+                {
+                    Console.WriteLine("作业{0}的先行作业没有成功地完全结束，本作业暂时无法调度。",job.Name);
+                    return;
+                }
                 List<JobProcess> processList;
                 if (!this.processDict.TryGetValue(job,out processList))
                 {
                     processList = new List<JobProcess>();
-                    this.processDict.Add(job, processList);
+                    lock (this.processDict)
+                    {
+                        this.processDict.Add(job, processList);
+                    }
                 }
 
                 if (processList.Count < this.processNumPerJob)
                 {
                     JobProcess process = new JobProcess(job);
-                    processList.Add(process);
+                    lock (processList)
+                    {
+                        processList.Add(process);
+                    }
                     process.Start();
                 }else
                 {
@@ -85,11 +128,45 @@ namespace HuaQuant.JobSchedule
                 }
             }
         }
-        public void Add(Job job, ITrigger trigger)
+        public void Add(IJob job, ITrigger trigger)
         {
             lock (this.triggerDict)
             {
                 this.triggerDict.Add(job, trigger);
+            }
+        }
+        public void ClearExpiredJobs()
+        {
+            List<IJob> expiredJobs = new List<IJob>();
+            foreach (KeyValuePair<IJob,ITrigger> jobTriggerPair in this.triggerDict)
+            {
+                if (jobTriggerPair.Value.Expired) expiredJobs.Add(jobTriggerPair.Key);
+            }
+            lock (this.triggerDict)
+            {
+                foreach (IJob job in expiredJobs) this.triggerDict.Remove(job);
+            }
+            foreach (IJob job in expiredJobs)
+            {
+                List<JobProcess> processList;
+                if (this.processDict.TryGetValue(job,out processList)){
+                    List<JobProcess> stoppedProcesses = new List<JobProcess>();
+                    foreach (JobProcess process in processList)
+                    {
+                        if (!process.IsRunning) stoppedProcesses.Add(process);
+                    }
+                    lock (processList)
+                    {
+                        foreach (JobProcess process in stoppedProcesses) processList.Remove(process);
+                    }
+                    if (processList.Count == 0)
+                    {
+                        lock (this.processDict)
+                        {
+                            this.processDict.Remove(job);
+                        }
+                    }
+                }
             }
         }
     }

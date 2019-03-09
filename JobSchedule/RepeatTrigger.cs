@@ -28,7 +28,7 @@ namespace HuaQuant.JobSchedule
         private bool expired = false;
         bool ITrigger.Expired => this.expired;
 
-        bool ITrigger.Trigger(DateTime time, Job job)
+        bool ITrigger.Trigger(DateTime time, IJob job)
         {
             if (startStopTimeLimiter != null)
             {
@@ -41,7 +41,7 @@ namespace HuaQuant.JobSchedule
             }
             if (freLimiter != null)
             {
-                if (freLimiter.Beyonded(job.Frequencies))
+                if (freLimiter.Beyonded(job.Frequencies+1))
                 {
                     this.expired = true;
                     return false;
