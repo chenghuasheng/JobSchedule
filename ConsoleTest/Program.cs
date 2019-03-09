@@ -17,8 +17,8 @@ namespace ConsoleTest
             //ITrigger trigger = new RepeatTrigger(new TimeSpan(0, 0, 5), DateTime.Parse("12:50:00"), 10);
             //ITrigger trigger = new SingleTrigger(DateTime.Parse("12:47:00"));
             //ITrigger trigger = new SingleTrigger(DateTime.Parse("12:59:00"),5, new TimeSpan(0, 0, 5));
-            ITrigger trigger = new SingleTrigger(DateTime.Parse("12:59:00"), DateTime.Parse("13:59:00"), 5, new TimeSpan(0, 0, 5));
-            ITrigger trigger2 = new SingleTrigger(DateTime.Parse("12:59:00"), DateTime.Parse("13:59:00"), 5, new TimeSpan(0, 0, 5));
+            ITrigger trigger = new SingleTrigger(DateTime.Parse("12:59:00"), DateTime.Parse("19:59:00"), 5, new TimeSpan(0, 0, 5));
+            ITrigger trigger2 = new SingleTrigger(DateTime.Parse("12:59:00"), DateTime.Parse("19:59:00"), 5, new TimeSpan(0, 0, 5));
             schedule.Add(job, trigger);
             IJob job2 = new TestJob("test2",new IJob[] { job});
             
@@ -40,7 +40,7 @@ namespace ConsoleTest
         public override bool Execute()
         {
             Console.WriteLine("Job <{0}> run a time", this.Name);
-            return true;
+            return false;
         }
     }
 }
