@@ -45,17 +45,22 @@ namespace HuaQuant.JobSchedule
         {
             this.finished = false;
             if (this.curJob.ShowDetail) Console.WriteLine("在时间{0},开始作业<{1}>的执行...", DateTime.Now, this.curJob.Name);
-
-            bool ret = this.curJob.Execute();
-            if (ret)
+            try
             {
-                this.finished = true;
-                this.curJob.IncrementFrequency();
-                if (this.curJob.ShowDetail) Console.WriteLine("在时间{0},作业<{1}>顺利完成。", DateTime.Now, this.curJob.Name);
-            }
-            else
+                bool ret = this.curJob.Execute();
+                if (ret)
+                {
+                    this.finished = true;
+                    this.curJob.IncrementFrequency();
+                    if (this.curJob.ShowDetail) Console.WriteLine("在时间{0},作业<{1}>顺利完成。", DateTime.Now, this.curJob.Name);
+                }
+                else
+                {
+                    if (this.curJob.ShowDetail) Console.WriteLine("在时间{0},作业<{1}>未能正常完成。", DateTime.Now, this.curJob.Name);
+                }
+            }catch(Exception ex)
             {
-                if (this.curJob.ShowDetail) Console.WriteLine("在时间{0},作业<{1}>未能正常完成。", DateTime.Now, this.curJob.Name);
+                Console.WriteLine("在时间{0},作业<{1}>发生异常:{2}", DateTime.Now, this.curJob.Name, ex.Message);
             }
         }
     }

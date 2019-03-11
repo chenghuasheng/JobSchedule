@@ -2,7 +2,7 @@
 
 namespace HuaQuant.JobSchedule
 {
-    public class SingleTimeLimiter
+    public class SingleTimeLimiter:ITimeLimiter
     {
         private DateTime limitTime;
         private SingleTimeLimiterPrecission precission;

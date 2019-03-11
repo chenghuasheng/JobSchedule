@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="EmptyJob.cs" />
     <Compile Include="IJob.cs" />
+    <Compile Include="ITimeLimiter.cs" />
     <Compile Include="ITrigger.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobProcess.cs" />

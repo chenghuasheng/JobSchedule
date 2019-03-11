@@ -4,8 +4,7 @@ namespace HuaQuant.JobSchedule
 {
     public class SingleTrigger : ITrigger
     {
-        private SingleTimeLimiter singleTimeLimiter = null;
-        private StartStopTimeLimiter startStopTimeLimiter = null;
+        private ITimeLimiter timeLimiter = null;
         private RepeatTrigger subTrigger = null;
         private Job subJob = null;
         
@@ -14,11 +13,11 @@ namespace HuaQuant.JobSchedule
             if (tryTimes > 0)
             {
                 this.subJob = new EmptyJob();
-                this.subTrigger = new RepeatTrigger((TimeSpan)timeInterval,starTime,stopTime,tryTimes);
+                this.subTrigger = new RepeatTrigger(timeInterval,starTime,stopTime,tryTimes);
             }
             else
             {
-                this.startStopTimeLimiter = new StartStopTimeLimiter(starTime, stopTime);
+                this.timeLimiter = new StartStopTimeLimiter(starTime, stopTime);
             }
         }
         public SingleTrigger(DateTime time,int tryTimes=0,TimeSpan? timeInterval=null)
@@ -26,10 +25,10 @@ namespace HuaQuant.JobSchedule
             if (tryTimes > 0)
             {
                 this.subJob = new EmptyJob();
-                this.subTrigger = new RepeatTrigger((TimeSpan)timeInterval, time, tryTimes);
+                this.subTrigger = new RepeatTrigger(timeInterval, time, tryTimes);
             }else
             {
-                this.singleTimeLimiter = new SingleTimeLimiter(time);
+                this.timeLimiter = new SingleTimeLimiter(time);
             }
         }
 
@@ -61,28 +60,15 @@ namespace HuaQuant.JobSchedule
             }
             else
             {
-                if (startStopTimeLimiter != null)
+                if (timeLimiter != null)
                 {
-                    if (!startStopTimeLimiter.Arrived(time)) return false;
-                    if (startStopTimeLimiter.Beyonded(time))
+                    if (!timeLimiter.Arrived(time)) return false;
+                    if (timeLimiter.Beyonded(time))
                     {
                         this.expired = true;
                         return false;
                     }
-                }
-                if (this.singleTimeLimiter != null)
-                {
-                    if (!this.singleTimeLimiter.Arrived(time)) return false;
-                    else
-                    {
-                        bool beyonded = this.singleTimeLimiter.Beyonded(time);
-                        if (!beyonded) return true;
-                        else
-                        {
-                            this.expired = true;
-                            return false;
-                        }
-                    }
+                    else return true;
                 }
                 else
                 {

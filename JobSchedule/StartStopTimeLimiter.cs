@@ -2,7 +2,7 @@
 
 namespace HuaQuant.JobSchedule
 {
-    public class StartStopTimeLimiter
+    public class StartStopTimeLimiter:ITimeLimiter
     {
         private DateTime startTime=DateTime.MinValue;
         private DateTime stopTime = DateTime.MaxValue;
@@ -20,6 +20,12 @@ namespace HuaQuant.JobSchedule
         {
             if (time > this.stopTime) return true;
             else return false;
+        }
+
+        public DateTime StartTime
+        {
+            get { return this.startTime; }
+            set { this.startTime = value; }
         }
     }
 }

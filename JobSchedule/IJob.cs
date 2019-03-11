@@ -6,7 +6,7 @@ namespace HuaQuant.JobSchedule
 {
     public interface IJob
     {
-        string Name { get; }
+        string Name { get; set; }
         bool ShowDetail { get; set; }
         IEnumerable<IJob> NeedJobs { get; }
         int Frequencies { get; }

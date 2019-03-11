@@ -7,7 +7,11 @@ namespace HuaQuant.JobSchedule
     public abstract class Job:IJob
     {
         private string name="Job";
-        public string Name  => this.name;
+        public string Name
+        {
+            get => this.name;
+            set => this.name = value;
+        }
         bool showDetail = false;
         public bool ShowDetail {
             get => this.showDetail;

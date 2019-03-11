@@ -7,7 +7,11 @@ namespace HuaQuant.JobSchedule
     public class JobQueue : IJob
     {
         private string name = "JobQueue";
-        public string Name => this.name;
+        public string Name
+        {
+            get => this.name;
+            set => this.name = value;
+        }
 
         bool showDetail = false;
         public bool ShowDetail
