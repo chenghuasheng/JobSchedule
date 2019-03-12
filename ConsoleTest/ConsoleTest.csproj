@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\JobSchedule2\JobSchedule2.csproj">
+      <Project>{3a0bd01b-af0a-4469-bd73-eb48c7179021}</Project>
+      <Name>JobSchedule2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JobSchedule\JobSchedule.csproj">
       <Project>{16174bd4-2cd6-4c55-bee9-312c898e18cd}</Project>
       <Name>JobSchedule</Name>

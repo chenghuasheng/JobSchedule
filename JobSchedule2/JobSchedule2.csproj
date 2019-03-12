@@ -42,13 +42,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmptyJob.cs" />
+    <Compile Include="NumberLimiter.cs" />
     <Compile Include="IJob.cs" />
+    <Compile Include="ITimeLimiter.cs" />
     <Compile Include="ITrigger.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobProcess.cs" />
     <Compile Include="JobSchedule.cs" />
     <Compile Include="JobTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepeatTrigger.cs" />
+    <Compile Include="SingleTimeLimiter.cs" />
+    <Compile Include="SingleTrigger.cs" />
+    <Compile Include="StartStopTimeLimiter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

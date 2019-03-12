@@ -67,12 +67,10 @@ namespace HuaQuant.JobSchedule2
             this.runningCount--;
             if (task.Succeed) this.succeedCount++;
         }
-        internal void Reset()
+        internal void Clear()
         {
-            this.runningCount = 0;
-            this.succeedCount = 0;
-            this.completedCount = 0;
-            while (this.tasks.TryTake(out JobTask task)) { };
+            while (this.tasks.TryTake(out JobTask task)) {  };
+            this.jobs.Clear();
         }
     }
 }

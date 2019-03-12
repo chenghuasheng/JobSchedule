@@ -35,7 +35,10 @@ namespace HuaQuant.JobSchedule2
                 timer = null;
             }
             this.cancelSource.Cancel();
-            foreach (JobProcess process in this.processDict.Values) process.Reset();
+            foreach (JobProcess process in this.processDict.Values) process.Clear();
+            this.triggerAndProcessDict.Clear();
+            this.triggerDict.Clear();
+            this.processDict.Clear();
         }
         private int inTimer = 0;//防止计时器事件重入
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
