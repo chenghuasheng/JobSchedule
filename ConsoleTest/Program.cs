@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using HuaQuant.JobSchedule;
+using HuaQuant.JobSchedule2;
 
 namespace ConsoleTest
 {

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobSchedule", "JobSchedule\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{75E24BB5-AEA5-41B9-8EC3-B5686EA08A48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobSchedule2", "JobSchedule2\JobSchedule2.csproj", "{3A0BD01B-AF0A-4469-BD73-EB48C7179021}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{75E24BB5-AEA5-41B9-8EC3-B5686EA08A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75E24BB5-AEA5-41B9-8EC3-B5686EA08A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75E24BB5-AEA5-41B9-8EC3-B5686EA08A48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A0BD01B-AF0A-4469-BD73-EB48C7179021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A0BD01B-AF0A-4469-BD73-EB48C7179021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A0BD01B-AF0A-4469-BD73-EB48C7179021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A0BD01B-AF0A-4469-BD73-EB48C7179021}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
