@@ -59,7 +59,7 @@ namespace HuaQuant.JobSchedule2
             {
                 if (timeLimiter != null)
                 {
-                    if (!timeLimiter.Unarrive(time)) return false;
+                    if (timeLimiter.Unarrive(time)) return false;
                     if (timeLimiter.Beyonded(time))
                     {
                         this.expired = true;
