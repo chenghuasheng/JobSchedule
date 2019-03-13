@@ -38,13 +38,10 @@ namespace ConsoleTest
     {
         public TestJob() : base("TestJob", null, true) { }
         public TestJob(string name,IEnumerable<IJob> needJobs) : base(name, needJobs, true) { }
-        public override bool Execute(CancellationToken? token)
+        public override bool Execute(CancellationToken token)
         {
             Thread.Sleep(500);
-            if (token != null)
-            {
-                ((CancellationToken)token).ThrowIfCancellationRequested();
-            }
+            token.ThrowIfCancellationRequested();
             Console.WriteLine("Job <{0}> run a time", this.Name);
             return true;
         }

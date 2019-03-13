@@ -9,6 +9,6 @@ namespace HuaQuant.JobSchedule2
         string Name { get; set; }
         bool ShowDetail { get; set; }
         IEnumerable<IJob> NeedJobs { get; }
-        bool Execute(CancellationToken? token=null);
+        bool Execute(CancellationToken token);
     }
 }

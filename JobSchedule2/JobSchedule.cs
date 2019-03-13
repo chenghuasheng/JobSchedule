@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Timers;
 
@@ -45,7 +42,7 @@ namespace HuaQuant.JobSchedule2
         {
             if (Interlocked.Exchange(ref inTimer, 1) == 0)
             {
-                foreach (KeyValuePair<ITrigger,JobProcess> kvp in this.triggerAndProcessDict)
+                foreach (KeyValuePair<ITrigger, JobProcess> kvp in this.triggerAndProcessDict)
                 {
                     if (!kvp.Key.Expired) this.schedule(e.SignalTime, kvp.Key, kvp.Value);
                 }
@@ -53,7 +50,7 @@ namespace HuaQuant.JobSchedule2
             }
         }
 
-        private void schedule(DateTime time,ITrigger trigger,JobProcess process)
+        private void schedule(DateTime time, ITrigger trigger, JobProcess process)
         {
             if (trigger.Trigger(time, process.SucceedCount, process.RunningCount))
             {
@@ -65,14 +62,14 @@ namespace HuaQuant.JobSchedule2
         private bool canRunning(IJob job)
         {
             if (job.NeedJobs == null) return true;
-            
-            foreach(IJob needJob in job.NeedJobs)
+
+            foreach (IJob needJob in job.NeedJobs)
             {
-                if (this.triggerDict.TryGetValue(needJob,out ITrigger trigger))
+                if (this.triggerDict.TryGetValue(needJob, out ITrigger trigger))
                 {
                     if (!trigger.Expired) return false;
                 }
-                if (this.processDict.TryGetValue(needJob,out JobProcess process))
+                if (this.processDict.TryGetValue(needJob, out JobProcess process))
                 {
                     if (process.RunningCount > 0) return false;
                 }
@@ -80,18 +77,18 @@ namespace HuaQuant.JobSchedule2
             return true;
         }
 
-        public void Add(IJob job,ITrigger trigger, int maxTaskNumber = 1)
+        public void Add(IJob job, ITrigger trigger, int maxTaskNumber = 1)
         {
-            JobProcess process = new JobProcess(job, maxTaskNumber, this.cancelSource.Token);
+            JobProcess process = new JobProcess(job, this.cancelSource.Token, maxTaskNumber);
             this.triggerAndProcessDict.TryAdd(trigger, process);
             this.triggerDict.TryAdd(job, trigger);
             this.processDict.TryAdd(job, process);
         }
-        public void Add(IEnumerable<IJob> jobs,ITrigger trigger,int maxTaskNumber=1)
+        public void Add(IEnumerable<IJob> jobs, ITrigger trigger, int maxTaskNumber = 1)
         {
-            JobProcess process = new JobProcess(jobs, maxTaskNumber, this.cancelSource.Token);
+            JobProcess process = new JobProcess(jobs, this.cancelSource.Token, maxTaskNumber);
             this.triggerAndProcessDict.TryAdd(trigger, process);
-            foreach(IJob job in jobs)
+            foreach (IJob job in jobs)
             {
                 this.triggerDict.TryAdd(job, trigger);
                 this.processDict.TryAdd(job, process);

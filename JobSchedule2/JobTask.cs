@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace HuaQuant.JobSchedule2
@@ -30,7 +27,7 @@ namespace HuaQuant.JobSchedule2
         {
             if (this.process.Jobs.Count <= 0)
             {
-                Console.WriteLine("此作业调度没有包含作业。");
+                Console.WriteLine("此作业进程没有包含作业。");
                 return;
             }
             this.completed = false;

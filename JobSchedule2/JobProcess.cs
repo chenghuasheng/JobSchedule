@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace HuaQuant.JobSchedule2
@@ -20,9 +18,9 @@ namespace HuaQuant.JobSchedule2
         internal int RunningCount => this.runningCount;
 
         private int maxTaskNumber = 1;
-        private CancellationToken? token = null;
-        internal CancellationToken? CancelToken => this.token;
-        internal JobProcess(IEnumerable<IJob> jobs, int maxTaskNumber = 1, CancellationToken? token = null)
+        private CancellationToken token ;
+        internal CancellationToken CancelToken => this.token;
+        internal JobProcess(IEnumerable<IJob> jobs, CancellationToken token , int maxTaskNumber = 1 )
         {
             foreach (IJob job in jobs)
             {
@@ -31,7 +29,7 @@ namespace HuaQuant.JobSchedule2
             this.maxTaskNumber = maxTaskNumber;
             this.token = token;
         }
-        internal JobProcess(IJob job, int maxTaskNumber = 1, CancellationToken? token = null)
+        internal JobProcess(IJob job, CancellationToken token, int maxTaskNumber = 1)
         {
             this.jobs.Add(job);
             this.maxTaskNumber = maxTaskNumber;

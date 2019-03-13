@@ -28,7 +28,7 @@ namespace HuaQuant.JobSchedule2
             this.showDetail = showDetail;
         }
 
-        public virtual bool Execute(CancellationToken? token = null)
+        public virtual bool Execute(CancellationToken token)
         {
             return true;
         }
