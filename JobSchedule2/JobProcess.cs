@@ -9,7 +9,7 @@ namespace HuaQuant.JobSchedule2
     {
         private List<IJob> jobs = new List<IJob>();
         internal List<IJob> Jobs => this.jobs;
-        private ConcurrentBag<JobTask> tasks = new ConcurrentBag<JobTask>();
+        private ConcurrentBag<JobTask> jTasks = new ConcurrentBag<JobTask>();
         private int completedCount = 0;
         internal int CompletedCount => this.completedCount;
         private int succeedCount = 0;
@@ -37,15 +37,15 @@ namespace HuaQuant.JobSchedule2
         }
         internal void StartATask()
         {
-            if (this.tasks.Count < this.maxTaskNumber)
+            if (this.jTasks.Count < this.maxTaskNumber)
             {
                 JobTask newTask = new JobTask(this);
-                this.tasks.Add(newTask);
+                this.jTasks.Add(newTask);
                 newTask.Start();
             }
             else
             {
-                foreach (JobTask task in this.tasks)
+                foreach (JobTask task in this.jTasks)
                 {
                     if (task.Completed)
                     {
@@ -67,8 +67,15 @@ namespace HuaQuant.JobSchedule2
         }
         internal void Clear()
         {
-            while (this.tasks.TryTake(out JobTask task)) {  };
+            while (this.jTasks.TryTake(out JobTask task)) {  };
             this.jobs.Clear();
+        }
+        internal void WaitAllTask()
+        {
+            foreach(JobTask jTask in this.jTasks)
+            {
+                jTask.InnerTask.Wait();
+            }
         }
     }
 }

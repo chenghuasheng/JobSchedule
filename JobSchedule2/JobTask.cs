@@ -8,6 +8,7 @@ namespace HuaQuant.JobSchedule2
     {
         private JobProcess process;
         private Task<bool> task = null;
+        internal Task<bool> InnerTask => this.task;
         private Dictionary<IJob, bool> succeedDict = new Dictionary<IJob, bool>();
         internal Dictionary<IJob, bool> SucceedDict => this.succeedDict;
         private bool completed = true;

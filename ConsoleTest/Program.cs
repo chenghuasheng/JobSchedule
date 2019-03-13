@@ -30,7 +30,7 @@ namespace ConsoleTest
             Console.ReadKey();
             //schedule.ClearExpiredJobs();
 
-            schedule.Stop();
+            schedule.Stop(true);
             Console.ReadKey();
         }
     }

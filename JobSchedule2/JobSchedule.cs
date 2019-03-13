@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 
 
@@ -23,7 +24,7 @@ namespace HuaQuant.JobSchedule2
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
         }
-        public void Stop()
+        public void Stop(bool block=false)
         {
             if (timer != null)
             {
@@ -32,7 +33,11 @@ namespace HuaQuant.JobSchedule2
                 timer = null;
             }
             this.cancelSource.Cancel();
-            foreach (JobProcess process in this.processDict.Values) process.Clear();
+            foreach (JobProcess process in this.processDict.Values)
+            {
+                if (block) process.WaitAllTask();
+                process.Clear();
+            }
             this.triggerAndProcessDict.Clear();
             this.triggerDict.Clear();
             this.processDict.Clear();
