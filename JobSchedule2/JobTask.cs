@@ -9,6 +9,7 @@ namespace HuaQuant.JobSchedule2
         private JobProcess process;
         private Task<bool> task = null;
         internal Task<bool> InnerTask => this.task;
+        private IJob runningJob;
         private Dictionary<IJob, bool> succeedDict = new Dictionary<IJob, bool>();
         internal Dictionary<IJob, bool> SucceedDict => this.succeedDict;
         private bool completed = true;
@@ -33,7 +34,7 @@ namespace HuaQuant.JobSchedule2
             }
             this.completed = false;
             this.succeed = false;
-            this.task = new Task<bool>(run);
+            this.task = new Task<bool>(run,this.process.CancelToken);
             this.task.ContinueWith(task => {
                 this.completed = task.IsCompleted;
                 this.succeed = task.Result;
@@ -45,12 +46,11 @@ namespace HuaQuant.JobSchedule2
         private bool run()
         {
             bool ret = true;
-            IJob curJob =null;
             try
             {
                 foreach (IJob job in this.process.Jobs)
                 {
-                    curJob = job;
+                    this.runningJob = job;
                     if (job.ShowDetail) Console.WriteLine("在时间{0},开始作业<{1}>的执行...", DateTime.Now, job.Name);
                     bool succeed = job.Execute(this.process.CancelToken);
                     if (job.ShowDetail)
@@ -61,17 +61,19 @@ namespace HuaQuant.JobSchedule2
                     ret = ret && succeed;
                     this.succeedDict[job] = succeed;
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 if (ex is OperationCanceledException)
                 {
-                    Console.WriteLine("在时间{0},作业<{1}>被取消，详细信息：{2}", DateTime.Now, curJob.Name, ex.Message);
-                    if (this.process.Jobs.Count > 1) Console.WriteLine("作业<{1}>所在的作业队列也被取消。", curJob.Name);
+                    Console.WriteLine("在时间{0},{1}作业被取消", DateTime.Now, this.runningJob.Name);
+                    if (this.process.Jobs.Count > 1) Console.WriteLine("作业<{1}>所在的作业队列也被取消。", this.runningJob.Name);
+
                 }
                 else
                 {
-                    Console.WriteLine("在时间{0},作业<{1}>发生异常:{2}", DateTime.Now, curJob.Name, ex.Message);
-                    if (this.process.Jobs.Count > 1) Console.WriteLine("作业<{1}>所在的作业队列被中断。", curJob.Name);
+                    Console.WriteLine("在时间{0},作业<{1}>发生异常:{2}", DateTime.Now, this.runningJob.Name, ex.Message);
+                    if (this.process.Jobs.Count > 1) Console.WriteLine("作业<{1}>所在的作业队列被中断。", this.runningJob.Name);
                 }
             }
             return ret;

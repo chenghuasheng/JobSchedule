@@ -18,22 +18,20 @@ namespace HuaQuant.JobSchedule2
         internal int RunningCount => this.runningCount;
 
         private int maxTaskNumber = 1;
-        private CancellationToken token ;
-        internal CancellationToken CancelToken => this.token;
-        internal JobProcess(IEnumerable<IJob> jobs, CancellationToken token , int maxTaskNumber = 1 )
+        private CancellationTokenSource tokenSource =new CancellationTokenSource();
+        internal CancellationToken CancelToken => this.tokenSource.Token;
+        internal JobProcess(IEnumerable<IJob> jobs, int maxTaskNumber = 1 )
         {
             foreach (IJob job in jobs)
             {
                 this.jobs.Add(job);
             }
             this.maxTaskNumber = maxTaskNumber;
-            this.token = token;
         }
-        internal JobProcess(IJob job, CancellationToken token, int maxTaskNumber = 1)
+        internal JobProcess(IJob job, int maxTaskNumber = 1)
         {
             this.jobs.Add(job);
             this.maxTaskNumber = maxTaskNumber;
-            this.token = token;
         }
         internal void StartATask()
         {
@@ -70,9 +68,13 @@ namespace HuaQuant.JobSchedule2
             while (this.jTasks.TryTake(out JobTask task)) {  };
             this.jobs.Clear();
         }
-        internal void WaitAllTask()
+        internal void CancelTasks()
         {
-            foreach(JobTask jTask in this.jTasks)
+            this.tokenSource.Cancel(false);
+        }
+        internal void WaitTasks()
+        {
+            foreach (JobTask jTask in this.jTasks)
             {
                 jTask.InnerTask.Wait();
             }

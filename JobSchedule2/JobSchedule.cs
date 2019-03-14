@@ -10,7 +10,6 @@ namespace HuaQuant.JobSchedule2
 {
     public class JobSchedule
     {
-        private CancellationTokenSource cancelSource = new CancellationTokenSource();
         private ConcurrentDictionary<IJob, ITrigger> triggerDict = new ConcurrentDictionary<IJob, ITrigger>();
         private ConcurrentDictionary<IJob, JobProcess> processDict = new ConcurrentDictionary<IJob, JobProcess>();
         private ConcurrentDictionary<ITrigger, JobProcess> triggerAndProcessDict = new ConcurrentDictionary<ITrigger, JobProcess>();
@@ -32,10 +31,11 @@ namespace HuaQuant.JobSchedule2
                 timer.Elapsed -= Timer_Elapsed;
                 timer = null;
             }
-            this.cancelSource.Cancel();
+            
             foreach (JobProcess process in this.processDict.Values)
             {
-                if (block) process.WaitAllTask();
+                process.CancelTasks();
+                if (block) process.WaitTasks();
                 process.Clear();
             }
             this.triggerAndProcessDict.Clear();
@@ -84,14 +84,14 @@ namespace HuaQuant.JobSchedule2
 
         public void Add(IJob job, ITrigger trigger, int maxTaskNumber = 1)
         {
-            JobProcess process = new JobProcess(job, this.cancelSource.Token, maxTaskNumber);
+            JobProcess process = new JobProcess(job, maxTaskNumber);
             this.triggerAndProcessDict.TryAdd(trigger, process);
             this.triggerDict.TryAdd(job, trigger);
             this.processDict.TryAdd(job, process);
         }
         public void Add(IEnumerable<IJob> jobs, ITrigger trigger, int maxTaskNumber = 1)
         {
-            JobProcess process = new JobProcess(jobs, this.cancelSource.Token, maxTaskNumber);
+            JobProcess process = new JobProcess(jobs, maxTaskNumber);
             this.triggerAndProcessDict.TryAdd(trigger, process);
             foreach (IJob job in jobs)
             {
